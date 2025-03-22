@@ -56,6 +56,18 @@ services:
     networks:
       - monitoring
 
+  synthetic_client:
+    image: node:14
+    container_name: synthetic_client
+    volumes:
+      - ./examples/node_app:/usr/src/app
+    working_dir: /usr/src/app
+    command: ["node", "synthetic_client.js"]
+    depends_on:
+      - node_app
+    networks:
+      - monitoring
+
 volumes:
   grafana-data:
 
