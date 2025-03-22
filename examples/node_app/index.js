@@ -1,6 +1,6 @@
 const express = require("express");
 const { logger } = require("./loki");
-const { register, httpRequestsTotal } = require("./prometheus");
+const { register, httpRequestsTotal, httpRequestDuration } = require("./prometheus");
 
 const app = express();
 const PORT = 8080;
@@ -13,9 +13,11 @@ app.get("/metrics", async (req, res) => {
 
 // Rota padrão
 app.get("/", (req, res) => {
+    const end = httpRequestDuration.startTimer();
     httpRequestsTotal.inc({ method: "GET", route: "/", status: 200 });
     logger.info("Requisição para rota principal!", { label: "app" });
     res.send("Hello, observability!");
+    end({ method: "GET", route: "/", status: 200 });
 });
 
 // Rodar aplicação

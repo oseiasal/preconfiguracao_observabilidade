@@ -10,6 +10,8 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
     networks:
       - monitoring
+    depends_on:
+      - node_app
 
   loki:
     image: grafana/loki
@@ -22,6 +24,8 @@ services:
       - '-config.file=/etc/loki/local-config.yaml'
     networks:
       - monitoring
+    depends_on:
+      - node_app
 
   grafana:
     image: grafana/grafana
@@ -34,6 +38,21 @@ services:
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin # Change this to your desired password
       - GF_SECURITY_ADMIN_USER=admin # Change this to your desired username
+    networks:
+      - monitoring
+    depends_on:
+      - prometheus
+      - loki
+
+  node_app:
+    image: node:14
+    container_name: node_app
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./examples/node_app:/usr/src/app
+    working_dir: /usr/src/app
+    command: ["node", "index.js"]
     networks:
       - monitoring
 
