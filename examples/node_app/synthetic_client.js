@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { logger } = require('./loki');
 
 const URL = 'http://localhost:8080';
 
@@ -6,20 +7,20 @@ async function makeRequest(type) {
     try {
         if (type === 'success') {
             await axios.get(URL);
-            console.log('Success request');
+            logger.info('Success request');
         } else if (type === 'error') {
             await axios.get(`${URL}/nonexistent`);
-            console.log('Error request');
+            logger.warn('Error request');
         } else if (type === 'slow') {
             await new Promise(resolve => setTimeout(resolve, 2000));
             await axios.get(URL);
-            console.log('Slow request');
+            logger.info('Slow request');
         } else if (type === 'fast') {
             await axios.get(URL);
-            console.log('Fast request');
+            logger.info('Fast request');
         }
     } catch (error) {
-        console.error('Request failed', error.message);
+        logger.error('Request failed', { message: error.message });
     }
 }
 
